@@ -61,7 +61,10 @@ chatForm.addEventListener("submit", async (event) => {
 
 function displayResponse(data) {
 
-  let html = `<p>${data.reply}</p>`;
+  let html = `
+  <p>${data.reply}</p>
+  <small>✨ Selected to reduce decision fatigue — only the top matches.</small>
+`;
 
   // If CartPilot recommends products
   if (data.products) {
@@ -90,11 +93,11 @@ function displayResponse(data) {
           </p>
 
           <button
-            class="buy-button"
-            onclick="startCheckout(${product.id})"
-          >
-            Choose this
-          </button>
+  class="buy-button"
+  onclick="startCheckout(${product.id})"
+>
+  ⚡ Buy Now — Quick Checkout
+</button>
 
         </div>
       `;

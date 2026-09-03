@@ -40,30 +40,55 @@ function extractBudget(text) {
 }
 
 function scoreProduct(product, text, budget) {
-  const words = text
-    .toLowerCase()
+  const query = text.toLowerCase();
+
+  let score = product.rating;
+
+  // Strong matches for category
+  if (query.includes(product.category.toLowerCase())) {
+    score += 20;
+  }
+
+  // Match product name
+  if (query.includes(product.name.toLowerCase())) {
+    score += 15;
+  }
+
+  // Strong color match
+  if (
+    product.color &&
+    query.includes(product.color.toLowerCase())
+  ) {
+    score += 15;
+  }
+
+  // Match occasion
+  if (
+    product.occasion &&
+    query.includes(product.occasion.toLowerCase())
+  ) {
+    score += 8;
+  }
+
+  // Match individual tags
+  for (const tag of product.tags) {
+    if (query.includes(tag.toLowerCase())) {
+      score += 8;
+    }
+  }
+
+  // Match words in product description
+  const words = query
     .split(/[^a-z]+/)
     .filter(Boolean);
 
-  let score = product.rating * 2;
-
-  const searchableText = [
-    product.name,
-    product.category,
-    product.description,
-    ...product.tags
-  ]
-    .join(" ")
-    .toLowerCase();
-
   for (const word of words) {
-
-    if (searchableText.includes(word)) {
-      score += 3;
+    if (product.description.toLowerCase().includes(word)) {
+      score += 2;
     }
-
   }
 
+  // Budget check
   if (product.price <= budget) {
     score += 5;
   } else {
@@ -75,10 +100,15 @@ function scoreProduct(product, text, budget) {
 
 function recommend(query) {
   const budget = extractBudget(query);
+
   const matches = catalog
-    .map(p => ({ ...p, score: scoreProduct(p, query, budget) }))
-    .filter(p => p.price <= budget)
-    .sort((a,b) => b.score - a.score)
+    .map((product) => ({
+      ...product,
+      score: scoreProduct(product, query, budget)
+    }))
+    .filter((product) => product.price <= budget)
+    .filter((product) => product.score > product.rating + 5)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 2);
 
   return { budget, matches };
