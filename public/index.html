@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CartPilot AI</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header>
+      <h1>CartPilot <span>AI</span></h1>
+      <p>Your autonomous shopping assistant</p>
+    </header>
+
+
+    <div class="chat-container">
+
+      <div class="chat-header">
+        🟢 CartPilot AI
+      </div>
+
+
+      <div id="chatMessages" class="chat-messages">
+
+        <div class="message bot">
+          👋 Hey! What are you looking for?
+
+          <br><br>
+
+          Try:
+          <b>"Shoes under ₹3,000 for everyday running"</b>
+        </div>
+
+      </div>
+
+
+      <form id="chatForm" class="chat-input">
+
+        <input
+          type="text"
+          id="userInput"
+          placeholder="Tell me what you're looking for..."
+        >
+
+        <button type="submit">
+          Send
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
