@@ -5,131 +5,176 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-
-  background: #0f172a;
-  color: white;
+  background: #080b12;
+  color: #eef2ff;
 }
 
 .app {
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
   padding: 40px 20px;
 }
 
+/* HERO */
+
 header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 30px;
 }
 
 header h1 {
-  font-size: 42px;
-  margin-bottom: 5px;
+  font-size: 48px;
+  margin: 0;
+  letter-spacing: -1px;
 }
 
-header span {
+header h1 span {
   color: #818cf8;
 }
 
 header p {
   color: #94a3b8;
+  margin-top: 8px;
 }
 
-
-.chat-container {
-
-  background: #1e293b;
-
-  border-radius: 15px;
-
-  overflow: hidden;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
+/* STATUS */
 
 .chat-header {
-
-  padding: 18px;
-
+  padding: 18px 22px;
   background: #111827;
-
+  border-bottom: 1px solid #293246;
   font-weight: bold;
-
-  border-bottom: 1px solid #334155;
+  font-size: 16px;
 }
 
+/* CHAT */
+
+.chat-container {
+  background: #111827;
+  border: 1px solid #293246;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
 
 .chat-messages {
-
-  height: 400px;
-
-  padding: 20px;
-
+  height: 480px;
+  padding: 22px;
   overflow-y: auto;
 
   display: flex;
-
   flex-direction: column;
-
-  gap: 15px;
+  gap: 14px;
 }
 
+/* MESSAGES */
 
 .message {
-
-  padding: 12px 16px;
-
-  border-radius: 12px;
-
-  max-width: 75%;
-
+  padding: 13px 16px;
+  border-radius: 16px;
+  max-width: 82%;
   line-height: 1.5;
 }
 
-
 .bot {
-
-  background: #334155;
-
   align-self: flex-start;
+  background: #1f2937;
+  border: 1px solid #374151;
 }
-
 
 .user {
-
-  background: #6366f1;
-
   align-self: flex-end;
+  background: #6366f1;
 }
 
+/* INPUT */
 
 .chat-input {
-
   display: flex;
-
   padding: 15px;
-
   gap: 10px;
-
-  border-top: 1px solid #334155;
+  border-top: 1px solid #293246;
 }
 
-
 .chat-input input {
-
   flex: 1;
+  padding: 14px;
 
-  padding: 12px;
+  background: #0b1020;
+  color: white;
 
-  border-radius: 8px;
-
-  border: none;
+  border: 1px solid #374151;
+  border-radius: 10px;
 
   font-size: 15px;
 }
 
+.chat-input input:focus {
+  outline: none;
+  border-color: #818cf8;
+}
 
 .chat-input button {
+  background: #6366f1;
+  color: white;
+
+  border: none;
+  padding: 12px 22px;
+
+  border-radius: 10px;
+
+  font-weight: bold;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.chat-input button:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+/* PRODUCTS */
+
+.products {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.product-card {
+  background: #111827;
+
+  border: 1px solid #374151;
+
+  border-radius: 14px;
+
+  padding: 16px;
+}
+
+.product-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.product-card p {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.tags {
+  color: #a5b4fc;
+  font-size: 13px;
+}
+
+.buy-button {
+  width: 100%;
+
+  margin-top: 10px;
+
+  padding: 11px;
 
   background: #6366f1;
 
@@ -137,15 +182,167 @@ header p {
 
   border: none;
 
-  padding: 12px 20px;
+  border-radius: 9px;
 
-  border-radius: 8px;
+  font-weight: bold;
 
   cursor: pointer;
 }
 
+.buy-button:hover {
+  background: #4f46e5;
+}
 
-.chat-input button:hover {
+/* OFFER */
+
+.offer {
+
+  margin-top: 14px;
+
+  padding: 12px;
+
+  background: #172554;
+
+  border: 1px solid #1e3a8a;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+}
+
+/* CHECKOUT CTA */
+
+.checkout-cta {
+
+  margin-top: 12px;
+
+  padding: 12px;
+
+  background: #052e16;
+
+  border: 1px solid #166534;
+
+  border-radius: 10px;
+}
+
+/* CHECKOUT PAGE */
+
+.checkout-page {
+
+  min-height: 100vh;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 20px;
+}
+
+.checkout-card {
+
+  width: min(500px, 100%);
+
+  background: #111827;
+
+  border: 1px solid #293246;
+
+  border-radius: 20px;
+
+  padding: 32px;
+
+  box-shadow:
+    0 20px 60px
+    rgba(0, 0, 0, 0.4);
+}
+
+.badge {
+
+  display: inline-block;
+
+  font-size: 11px;
+
+  letter-spacing: 1.5px;
+
+  padding: 8px 11px;
+
+  border: 1px solid #4b5563;
+
+  border-radius: 999px;
+
+  color: #a5b4fc;
+}
+
+.checkout-product {
+
+  margin: 24px 0;
+
+  padding: 20px;
+
+  background: #0b1020;
+
+  border-radius: 14px;
+}
+
+.payment-options {
+
+  display: grid;
+
+  gap: 12px;
+}
+
+.payment-options button {
+
+  padding: 16px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #6366f1;
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.payment-options button:hover {
 
   background: #4f46e5;
+}
+
+.disclaimer {
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  margin-top: 20px;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  header {
+
+    display: block;
+
+  }
+
+  header h1 {
+
+    font-size: 40px;
+
+  }
+
+  .message {
+
+    max-width: 95%;
+
+  }
+
 }
