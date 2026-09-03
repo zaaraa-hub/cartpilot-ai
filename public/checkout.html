@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CartPilot Checkout</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="checkout-page">
+
+    <div class="checkout-card">
+
+      <span class="badge">
+        DEMO CHECKOUT
+      </span>
+
+      <h1>Ready to order?</h1>
+
+      <div id="product">
+        Loading product...
+      </div>
+
+
+      <div class="payment-options">
+
+        <button onclick="completeOrder('UPI')">
+          ⚡ 1-Click UPI
+        </button>
+
+
+        <button onclick="completeOrder('COD')">
+          Cash on Delivery
+        </button>
+
+      </div>
+
+
+      <p class="disclaimer">
+
+        Demo only — no real payment is processed.
+
+        A production version would integrate an
+        approved Razorpay checkout flow securely
+        on the server.
+
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <script>
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const productId =
+      params.get("productId");
+
+
+    fetch(`/api/product/${productId}`)
+
+      .then((response) =>
+        response.json()
+      )
+
+      .then((product) => {
+
+        document.getElementById(
+          "product"
+        ).innerHTML = `
+
+          <div class="checkout-product">
+
+            <h2>
+              ${product.name}
+            </h2>
+
+            <p>
+              ${product.description}
+            </p>
+
+            <h2>
+              ₹${product.price.toLocaleString("en-IN")}
+            </h2>
+
+          </div>
+
+        `;
+
+      });
+
+
+    function completeOrder(method) {
+
+      document.querySelector(
+        ".checkout-card"
+      ).innerHTML = `
+
+        <span class="badge">
+          ORDER COMPLETE
+        </span>
+
+        <h1>
+          🎉 Demo order placed!
+        </h1>
+
+        <p>
+          Your ${method} checkout flow
+          was simulated successfully.
+        </p>
+
+        <br>
+
+        <a
+          href="/"
+          style="color: #818cf8"
+        >
+          ← Back to CartPilot AI
+        </a>
+
+      `;
+
+    }
+
+  </script>
+
+</body>
+</html>
