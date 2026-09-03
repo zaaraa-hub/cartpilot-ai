@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "RunLite Everyday",
+    "category": "running shoes",
+    "price": 2499,
+    "sizes": ["6", "7", "8", "9", "10"],
+    "tags": ["running", "everyday", "lightweight", "comfort"],
+    "description": "Lightweight everyday running shoe with cushioned support.",
+    "rating": 4.5
+  },
+  {
+    "id": 2,
+    "name": "SprintPro Flex",
+    "category": "running shoes",
+    "price": 2899,
+    "sizes": ["7", "8", "9", "10"],
+    "tags": ["running", "everyday", "responsive", "durable"],
+    "description": "Responsive cushioning for daily runs and long walks.",
+    "rating": 4.7
+  },
+  {
+    "id": 3,
+    "name": "UrbanWalk Comfort",
+    "category": "walking shoes",
+    "price": 1999,
+    "sizes": ["6", "7", "8", "9", "10"],
+    "tags": ["walking", "everyday", "comfort"],
+    "description": "Comfort-first shoe designed for daily wear.",
+    "rating": 4.3
+  },
+  {
+    "id": 4,
+    "name": "TrailEdge X",
+    "category": "running shoes",
+    "price": 3499,
+    "sizes": ["7", "8", "9", "10"],
+    "tags": ["trail", "running", "grip"],
+    "description": "High-grip outdoor running shoe for rough terrain.",
+    "rating": 4.6
+  }
+]
