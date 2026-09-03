@@ -19,24 +19,56 @@ const INR = new Intl.NumberFormat("en-IN", {
 });
 
 function extractBudget(text) {
-  const match = text.match(/(?:under|below|less than|within|budget.*?)(?:\s*₹?\s*)(\d[\d,]*)/i)
-    || text.match(/₹\s*(\d[\d,]*)/);
-  return match ? Number(match[1].replace(/,/g, "")) : Infinity;
+  const patterns = [
+    /under\s*₹?\s*(\d[\d,]*)/i,
+    /below\s*₹?\s*(\d[\d,]*)/i,
+    /less than\s*₹?\s*(\d[\d,]*)/i,
+    /within\s*₹?\s*(\d[\d,]*)/i,
+    /budget.*?₹?\s*(\d[\d,]*)/i,
+    /₹\s*(\d[\d,]*)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+
+    if (match) {
+      return Number(match[1].replace(/,/g, ""));
+    }
+  }
+
+  return Infinity;
 }
 
 function scoreProduct(product, text, budget) {
-  const words = text.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  const words = text
+    .toLowerCase()
+    .split(/[^a-z]+/)
+    .filter(Boolean);
+
   let score = product.rating * 2;
 
+  const searchableText = [
+    product.name,
+    product.category,
+    product.description,
+    ...product.tags
+  ]
+    .join(" ")
+    .toLowerCase();
+
   for (const word of words) {
-    if (product.name.toLowerCase().includes(word)) score += 3;
-    if (product.category.toLowerCase().includes(word)) score += 4;
-    if (product.tags.some(tag => tag.includes(word))) score += 3;
-    if (product.description.toLowerCase().includes(word)) score += 1;
+
+    if (searchableText.includes(word)) {
+      score += 3;
+    }
+
   }
 
-  if (product.price <= budget) score += 5;
-  else score -= 100;
+  if (product.price <= budget) {
+    score += 5;
+  } else {
+    score -= 100;
+  }
 
   return score;
 }
