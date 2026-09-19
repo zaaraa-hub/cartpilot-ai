@@ -1,4 +1,58 @@
-
+const STOPWORDS = new Set([
+  "the", "and", "for", "with", "from", "that", "this", "your", "you",
+  "are", "was", "want", "need", "looking", "look", "show", "get", "buy",
+  "please", "some", "any", "something", "under", "below", "less", "than",
+  "within", "budget", "around", "about", "have", "got", "can", "could",
+  "would", "like", "also", "just", "find", "me"
+]);
+export function tokenize(text) {
+  return String(text)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length >= 3 && !STOPWORDS.has(word));
+}
+export function stemSet(word) {
+  const w = word.toLowerCase();
+  const stems = new Set([w]);
+  if (w.endsWith("ies") && w.length > 4) {
+    stems.add(w.slice(0, -3) + "y");
+  }
+  if (w.endsWith("es") && w.length > 4) {
+    stems.add(w.slice(0, -2));
+  }
+  if (w.endsWith("s") && !w.endsWith("ss") && w.length > 3) {
+    stems.add(w.slice(0, -1));
+  }
+  return stems;
+}
+export function sharesStem(a, b) {
+  const aStems = stemSet(a);
+  for (const stem of stemSet(b)) {
+    if (aStems.has(stem)) return true;
+  }
+  return false;
+}
+function overlapCount(queryTokens, otherTokens) {
+  let count = 0;
+  for (const token of otherTokens) {
+    if (queryTokens.some((queryToken) => sharesStem(queryToken, token))) {
+      count += 1;
+    }
+  }
+  return count;
+}
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function descriptionHasToken(description, token) {
+  const haystack = description.toLowerCase();
+  return [...stemSet(token)].some((stem) =>
+    new RegExp(`\\b${escapeRegex(stem)}\\b`, "i").test(haystack)
+  );
+}
+export function matchingCategories(query, catalog) {
+  const queryTokens = tokenize(query);
+  if (!queryTokens.length) return [];
   const categories = [...new Set(catalog.map((product) => product.category.toLowerCase()))];
   const scored = categories
     .map((category) => {
@@ -16,7 +70,7 @@
     return fullMatches.map((entry) => entry.category);
   }
   return scored.map((entry) => entry.category);
-
+}
 export function extractBudget(text) {
   const patterns = [
     /under\s*₹?\s*(\d[\d,]*)/i,
@@ -77,27 +131,4 @@ export function scoreProduct(product, text, budget) {
   } else {
     score -= 100;
   }
-  return score;
-}
-export function recommend(query, catalog) {
-  const budget = extractBudget(query);
-  const MAX_RESULTS = 6;
-  const categories = matchingCategories(query, catalog);
-  const pool = categories.length
-    ? catalog.filter((product) => categories.includes(product.category.toLowerCase()))
-    : catalog;
-  const matches = pool
-    .map((product) => ({
-      ...product,
-      score: scoreProduct(product, query, budget)
-    }))
-    .filter((product) => product.price <= budget)
-    .filter((product) =>
-      categories.length
-        ? true
-        : product.score > product.rating
-    )
-    .sort((a, b) => b.score - a.score)
-    .slice(0, MAX_RESULTS);
-  return { budget, matches, categories };
-}
+} 
