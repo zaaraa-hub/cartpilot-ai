@@ -26,7 +26,10 @@ function updateCartBadge() {
 
 function addToCart(product) {
   const cart = getCart();
-  const existing = cart.find((item) => item.id === product.id);
+
+  const existing = cart.find(
+    (item) => item.id === product.id
+  );
 
   if (existing) {
     existing.qty += 1;
@@ -42,6 +45,12 @@ function addToCart(product) {
 
   saveCart(cart);
   renderCart();
+
+  // Show confirmation message in chat
+  addMessage(
+    `✅ ${product.name} has been added to your cart!`,
+    "bot"
+  );
 }
 
 function removeFromCart(id) {
