@@ -31,7 +31,27 @@
         <h3>Shipping details</h3>
 
         <input type="text" id="fullName" placeholder="Full name" required>
-        <input type="tel" id="phone" placeholder="Phone number" required>
+        <div class="phone-row">
+        <select id="countryCode" required>
+        <option value="+91" selected>🇮🇳 +91</option>
+        <option value="+1">🇺🇸 +1</option>
+       <option value="+44">🇬🇧 +44</option>
+       <option value="+971">🇦🇪 +971</option>
+       <option value="+49">🇩🇪 +49</option>
+       <option value="+65">🇸🇬 +65</option>
+       <option value="+61">🇦🇺 +61</option>
+       <option value="+81">🇯🇵 +81</option>
+  </select>
+
+  <input
+    type="tel"
+    id="phone"
+    placeholder="Phone number"
+    inputmode="numeric"
+    autocomplete="tel"
+    required
+  >
+</div>
         <input type="text" id="address" placeholder="Address (house no., street, area)" required>
         <div class="shipping-row">
           <input type="text" id="city" placeholder="City" required>
@@ -160,10 +180,29 @@
     }
 
     document.getElementById("shippingForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      document.getElementById("shippingForm").style.display = "none";
-      document.getElementById("paymentSection").style.display = "grid";
-    });
+  event.preventDefault();
+
+  const countryCode = document.getElementById("countryCode").value;
+  const phoneInput = document.getElementById("phone");
+  const phone = phoneInput.value.trim();
+
+  // India: exactly 10 digits
+  if (countryCode === "+91" && !/^\d{10}$/.test(phone)) {
+    alert("Please enter a valid 10-digit Indian phone number.");
+    phoneInput.focus();
+    return;
+  }
+
+  // Other countries: basic digit validation
+  if (!/^\d{6,15}$/.test(phone)) {
+    alert("Please enter a valid phone number.");
+    phoneInput.focus();
+    return;
+  }
+
+  document.getElementById("shippingForm").style.display = "none";
+  document.getElementById("paymentSection").style.display = "grid";
+});
 
     loadOrder();
 
@@ -171,7 +210,10 @@
 
       const shipping = {
         name: document.getElementById("fullName").value,
-        phone: document.getElementById("phone").value,
+        phone:
+  document.getElementById("countryCode").value +
+  " " +
+  document.getElementById("phone").value,
         address: document.getElementById("address").value,
         city: document.getElementById("city").value,
         pincode: document.getElementById("pincode").value
