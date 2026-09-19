@@ -266,5 +266,4 @@ https://cartpilot-ai.onrender.com/
 https://github.com/zaaraa-hub/cartpilot-ai
 
 ```
-direction**, which is a much stronger portfolio story.
-```
+
