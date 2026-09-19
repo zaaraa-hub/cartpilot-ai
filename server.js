@@ -100,6 +100,7 @@ function scoreProduct(product, text, budget) {
 
 function recommend(query) {
   const budget = extractBudget(query);
+  const MAX_RESULTS = 6;
 
   const matches = catalog
     .map((product) => ({
@@ -107,9 +108,13 @@ function recommend(query) {
       score: scoreProduct(product, query, budget)
     }))
     .filter((product) => product.price <= budget)
-    .filter((product) => product.score > product.rating + 5)
+    // Loosened: any product with a genuine keyword/category/tag hit clears
+    // this bar. scoreProduct() only adds meaningful points (20/15/15/8/8/2)
+    // for actual matches, so "score > rating" alone is enough signal —
+    // the old "+5" bar was silently dropping valid single-tag matches.
+    .filter((product) => product.score > product.rating)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 2);
+    .slice(0, MAX_RESULTS);
 
   return { budget, matches };
 }
@@ -139,6 +144,21 @@ function answerDoubt(message) {
   return null;
 }
 
+function isVagueQuery(text, budget) {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  if (words.length > 3) return false;
+  if (Number.isFinite(budget)) return false;
+
+  const lower = text.toLowerCase();
+  const hasDescriptor = catalog.some((p) =>
+    (p.color && lower.includes(p.color.toLowerCase())) ||
+    (p.occasion && lower.includes(p.occasion.toLowerCase())) ||
+    p.tags.some((tag) => tag.toLowerCase() !== p.category.toLowerCase() && lower.includes(tag.toLowerCase()))
+  );
+
+  return !hasDescriptor;
+}
+
 app.post("/api/chat", (req, res) => {
   const { message } = req.body;
   if (!message) return res.status(400).json({ error: "Message is required" });
@@ -152,7 +172,16 @@ app.post("/api/chat", (req, res) => {
     });
   }
 
-  const { budget, matches } = recommend(message);
+  const budget = extractBudget(message);
+
+  if (isVagueQuery(message, budget)) {
+    return res.json({
+      type: "clarify",
+      reply: `Got it — you're looking for ${message.trim()}. To find the best match, tell me a bit more: any preferred color, budget, or occasion (casual, party, sports)?`
+    });
+  }
+
+  const { matches } = recommend(message);
 
   if (!matches.length) {
     return res.json({
@@ -163,7 +192,9 @@ app.post("/api/chat", (req, res) => {
 
   return res.json({
     type: "recommendations",
-    reply: "I found the top 2 matches for you:",
+    reply: matches.length === 1
+      ? "I found a match for you:"
+      : `I found ${matches.length} matches for you:`,
     products: matches.map(p => ({
       id: p.id,
       name: p.name,
@@ -191,6 +222,35 @@ app.post("/api/checkout", (req, res) => {
     demo: true,
     product,
     checkoutUrl: `/checkout.html?productId=${product.id}`
+  });
+});
+
+app.post("/api/checkout-cart", (req, res) => {
+  const { items } = req.body;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "Cart is empty" });
+  }
+
+  const resolved = items.map((item) => {
+    const product = catalog.find(p => p.id === Number(item.productId));
+    const qty = Math.max(1, Number(item.qty) || 1);
+    return product ? { ...product, qty, lineTotal: product.price * qty } : null;
+  }).filter(Boolean);
+
+  if (!resolved.length) {
+    return res.status(404).json({ error: "No valid products found in cart" });
+  }
+
+  const total = resolved.reduce((sum, p) => sum + p.lineTotal, 0);
+
+  // Demo only. Replace with an authenticated server-side Razorpay/Magic Checkout flow.
+  res.json({
+    success: true,
+    demo: true,
+    items: resolved,
+    total,
+    totalFormatted: INR.format(total)
   });
 });
 

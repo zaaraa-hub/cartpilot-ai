@@ -14,8 +14,15 @@
   <div class="app">
 
     <header>
-      <h1>CartPilot <span>AI</span></h1>
-      <p>Your autonomous shopping assistant</p>
+      <div>
+        <h1>CartPilot <span>AI</span></h1>
+        <p>Your autonomous shopping assistant</p>
+      </div>
+
+      <button id="cartButton" class="cart-button" onclick="openCart()">
+        🛒 Cart
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
     </header>
 
 
@@ -34,7 +41,7 @@
           <br><br>
 
           Try:
-          <b>"Shoes under ₹3,000 for everyday running"</b>
+          <b>"Party dress under ₹2,500"</b>
         </div>
 
       </div>
@@ -56,6 +63,17 @@
 
     </div>
 
+  </div>
+
+  <div id="cartOverlay" class="cart-overlay" onclick="closeCartOnOverlay(event)">
+    <div class="cart-panel">
+      <div class="cart-panel-header">
+        <h2>Your Cart</h2>
+        <button class="cart-close" onclick="closeCart()">✕</button>
+      </div>
+      <div id="cartItems" class="cart-items"></div>
+      <div id="cartFooter" class="cart-footer"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>

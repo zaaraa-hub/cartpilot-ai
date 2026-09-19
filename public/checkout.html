@@ -26,8 +26,27 @@
         Loading product...
       </div>
 
+      <form id="shippingForm" class="shipping-form">
 
-      <div class="payment-options">
+        <h3>Shipping details</h3>
+
+        <input type="text" id="fullName" placeholder="Full name" required>
+        <input type="tel" id="phone" placeholder="Phone number" required>
+        <input type="text" id="address" placeholder="Address (house no., street, area)" required>
+        <div class="shipping-row">
+          <input type="text" id="city" placeholder="City" required>
+          <input type="text" id="pincode" placeholder="Pincode" required>
+        </div>
+
+        <div id="sizeFields"></div>
+
+        <button type="submit" class="checkout-button">
+          Continue to Payment
+        </button>
+
+      </form>
+
+      <div id="paymentSection" class="payment-options" style="display:none">
 
         <button onclick="completeOrder('UPI')">
           ⚡ 1-Click UPI
@@ -63,45 +82,104 @@
         window.location.search
       );
 
+    const productId = params.get("productId");
+    const isCartCheckout = params.get("cart") === "1";
 
-    const productId =
-      params.get("productId");
+    const INR = new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0
+    });
 
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem("cartpilot_cart")) || [];
+      } catch {
+        return [];
+      }
+    }
 
-    fetch(`/api/product/${productId}`)
+    // Unified list of { product, qty } this checkout is for
+    let orderItems = [];
 
-      .then((response) =>
-        response.json()
-      )
+    async function loadOrder() {
+      if (isCartCheckout) {
+        const cart = getCart();
 
-      .then((product) => {
+        if (!cart.length) {
+          document.getElementById("product").innerHTML =
+            `<p>Your cart is empty. <a href="/" style="color:#818cf8">Go back and add something.</a></p>`;
+          document.getElementById("shippingForm").style.display = "none";
+          return;
+        }
 
-        document.getElementById(
-          "product"
-        ).innerHTML = `
+        const products = await Promise.all(
+          cart.map((item) => fetch(`/api/product/${item.id}`).then((r) => r.json()))
+        );
 
-          <div class="checkout-product">
+        orderItems = cart.map((item, i) => ({ product: products[i], qty: item.qty }));
+      } else {
+        const product = await fetch(`/api/product/${productId}`).then((r) => r.json());
+        orderItems = [{ product, qty: 1 }];
+      }
 
-            <h2>
-              ${product.name}
-            </h2>
+      renderOrderSummary();
+      renderSizeFields();
+    }
 
-            <p>
-              ${product.description}
-            </p>
+    function renderOrderSummary() {
+      const total = orderItems.reduce((sum, { product, qty }) => sum + product.price * qty, 0);
 
-            <h2>
-              ₹${product.price.toLocaleString("en-IN")}
-            </h2>
+      document.getElementById("product").innerHTML = `
+        <div class="checkout-product">
+          ${orderItems.map(({ product, qty }) => `
+            <div class="checkout-cart-row">
+              <span>${product.name}${qty > 1 ? ` × ${qty}` : ""}</span>
+              <span>${INR.format(product.price * qty)}</span>
+            </div>
+          `).join("")}
+          <h2 class="checkout-total-row">
+            Total: ${INR.format(total)}
+          </h2>
+        </div>
+      `;
+    }
 
-          </div>
+    function renderSizeFields() {
+      const withSizes = orderItems.filter(({ product }) => product.sizes && product.sizes.length);
 
-        `;
+      document.getElementById("sizeFields").innerHTML = withSizes.map(({ product }) => `
+        <label class="size-label">
+          Size for "${product.name}"
+          <select id="size-${product.id}" required>
+            <option value="" disabled selected>Choose size</option>
+            ${product.sizes.map((s) => `<option value="${s}">${s}</option>`).join("")}
+          </select>
+        </label>
+      `).join("");
+    }
 
-      });
+    document.getElementById("shippingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      document.getElementById("shippingForm").style.display = "none";
+      document.getElementById("paymentSection").style.display = "grid";
+    });
 
+    loadOrder();
 
     function completeOrder(method) {
+
+      const shipping = {
+        name: document.getElementById("fullName").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        pincode: document.getElementById("pincode").value
+      };
+
+      if (isCartCheckout) {
+        localStorage.removeItem("cartpilot_cart");
+      }
 
       document.querySelector(
         ".checkout-card"
@@ -120,9 +198,14 @@
           was simulated successfully.
         </p>
 
+        <p class="disclaimer">
+          Shipping to ${shipping.name}, ${shipping.address},
+          ${shipping.city} - ${shipping.pincode} · ${shipping.phone}
+        </p>
+
         <br>
 
-        <a
+        
           href="/"
           style="color: #818cf8"
         >
